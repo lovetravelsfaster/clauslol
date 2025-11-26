@@ -10,3 +10,6 @@ venv/
 *.swp
 EOF
 
+# Make/Website
+_site/
+
