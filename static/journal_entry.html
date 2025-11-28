@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+	<head>
+		<title>claus.lol</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<!-- <link rel="icon" href="/static/favicon.jpg"> -->
+
+		<link rel="stylesheet" href="/static/style.css?v=1">
+		<link rel="stylesheet" href="/static/ansi.css?v=1">
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<div id="container">
+			<div id="top-nav">
+				<ul>
+					<li><a href="/">home</a></li>
+					<li><a href="/journal" class="active">journal</a></li>
+					<li><a href="/resources">resources</a></li>
+					<li class="right"><a href="/contact">contact</a></li>
+				</ul>
+			</div>
+
+			<h1 class="title">&gt; Journal {{JOURNAL_NUMBER}}</h1>
+			<p class="content">    Date: {{JOURNAL_DATE}}</p>
+
+			{{JOURNAL_ENTRY}}
+			
+			<pre class="footer"><code>
+source: <a class="alt" href="https://github.com/lovetravelsfaster/clauslol">github.com/lovetravelsfaster/clauslol</a>
+&copy; claus <script>document.write(new Date().getFullYear())</script>
+			</code></pre>
+		</div>
+		<!--<script src="/static/commands.js"></script>
+		<script src="/static/terminal.js"></script>-->
+	</body>
+</html>

@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+#
+# Convert the list of .md files in journal_entries/ into
+# 1. A JSON formatted list for the journal page index
+# 2. A journal entry HTML page for each .md file
+#
+# Author: lovetravelsfaster
+# Date: 2025-11-27
+# License: MIT
+
+journal_entries_md_dir=journal_entries
+journal_entries_html_dir=_site/journal/html_entries
+
+# Extract YAML metadata (between the first pair of --- lines)
+extract_metadata() {
+    local file=$1
+    awk '
+        /^---$/ {
+            if (start) {
+                exit
+            }
+            start = 1
+            next
+        }
+        start {
+            print
+        }
+    ' "$file"
+}
+
+parse_yaml_metadata() {
+    local file=$1 line key val
+
+    while IFS= read -r line; do
+        # skip empty and comment lines
+        [[ -z $line || $line == \#* ]] && continue
+
+        # must contain a colon
+        [[ $line == *:* ]] || continue
+
+        # Split into key and value
+        key=${line%%:*}
+        val=${line#*:}
+
+        # Trim whitespace around key
+        key=${key%%[[:space:]]*}
+
+        # Trim leading whitespace from value
+        val=${val#"${val%%[![:space:]]*}"}
+
+        printf '%s=%s\n' "$key" "$val"
+    done < <(extract_metadata "$file")
+}
+
+
+# Parse metadata into key/value to stdout
+parse_metadata() {
+    local file=$1 line key val
+
+    while IFS= read -r line; do
+        [[ -z $line || $line == \#* ]] && continue
+        [[ $line == *"=\""* ]] || continue
+
+        key=${line%%=*}
+        val=${line#*=}
+        val=${val#\"}
+        val=${val%\"}
+
+        printf '%s=%s\n' "$key" "$val"
+    done < <(extract_metadata "$file")
+}
+
+for entry in $journal_entries_md_dir/*.md; do
+
+	# The journal_entry.html "template" has a few 
+	# placeholders we need to replace. Journal number, 
+	# Journal date, and Journal title
+
+	# Convert from .md to .html, and inject the HTML
+	# snippet into the journal_entry.html template, 
+	# and create the full journal entry html page for
+	# the given entry
+
+	# Get filename and date
+	filename="$(basename "$entry")"
+	filename="${filename%.*}"
+	date="${filename:0:10}"
+
+	entry_dir=_site/journal/"$filename"
+
+	mkdir -p "$entry_dir"
+
+	# Get metadata key/values into assoc array
+	declare -A metadata=()
+	while IFS='=' read -r k v; do
+	    metadata["$k"]="$v"
+	done < <(parse_yaml_metadata "$entry")
+
+	echo "Title: ${metadata[title]}" >&2
+	echo "Description: ${metadata[description]}" >&2
+	echo "Number: ${metadata[number]}" >&2
+
+	#pandoc $entry -f markdown -t html
+
+	#entry_html=<(pandoc $entry -f markdown -t html)
+
+	#echo $entry_html
+	pandoc $entry -f markdown -t html | \
+	sed \
+		-e "s|{{JOURNAL_NUMBER}}|${metadata[number]}|g" \
+		-e "s|{{JOURNAL_DATE}}|$date|g" \
+		-e "/{{JOURNAL_ENTRY}}/{
+		         r /dev/stdin
+		         d
+		     }" \
+		  static/journal_entry.html > "$entry_dir"/index.html
+	#sed -e "/{{CONTENT}}/{
+    #    r $entry_html
+    #    d
+    #}" static/journal_entry.html > _site/
+
+
+	# filename="$(basename "$entry")"
+	# Convert to html snippet file
+	# pandoc -f markdown -t html $entry > $journal_entries_html_dir/$filename.html
+	# echo "File: $entry" >&2
+
+	# metadata=$(extract_metadata "$entry")
+	# echo "  Metadata:"
+    # printf '%s\n' "$metadata"
+done

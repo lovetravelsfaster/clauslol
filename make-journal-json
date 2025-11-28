@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+#
+# Convert the list of journal entries into JSON format - pass an argument to make it
+# JSONP instead.
+#
+# Author: lovetravelsfaster
+# Date: 2025-11-27
+# License: MIT
+
+varname=$1
+
+baselink='https://claus.lol'
+
+# this is a "journal_entry" object in the final json
+read -d '' -r json <<-"EOF"
+{
+	"title": $title,
+	"desc": $desc,
+	"link": $link,
+	"num": $num
+}
+EOF
+
+# read data
+objects=()
+while IFS=$'\t' read -r num title desc link; do
+	object=$(jq -nc \
+		--arg title "$title" \
+		--arg desc "$desc" \
+		--arg link "$baselink$link" \
+		--argjson num "$num" \
+		"$json"
+	) || exit
+	objects+=("$object")
+done < <(./make-list)
+
+# generate output JSON
+printf -v now '%(%s)T' -1
+output=$(printf '%s\n' "${objects[@]}" | jq -n \
+    --argjson date "$now" \
+    --arg link "$baselink" \
+    '{
+        "name": "Claus LOL,
+        "site": $link,
+        "generated": $date,
+        "journal_entries": [inputs]
+     }'
+)
+
+# print the data (optionally as jsonp if the first arg is set)
+if [[ -n $varname ]]; then
+	output="const $varname = $output;"
+fi
+echo "$output"

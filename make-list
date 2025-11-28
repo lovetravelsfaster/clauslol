@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# Loop each journal entry and generate a tab-separated list of all journal entries seen to
+# stdout
+#
+# Author: lovetravelsfaster
+# Date: 2025-11-27
+# License: MIT
+
+dir=${1:-../journal_entries}
+
+for pt in "$dir"/pt*/meta.txt; do
+	mapfile -t lines < "$pt"
+
+	# read the meta at the top
+	title=${lines[0]}
+	num=${title%%.*}
+	title=${title#*. }
+	link=/v/$num
+	desc=${lines[1]}
+
+	# read the key values pairs at the bottom
+	lines=("${lines[@]:2}")
+	declare -A links=()
+	for line in "${lines[@]}"; do
+		read -r key value <<< "$line"
+		[[ -n $key && -n $value ]] || continue
+		links[$key]=$value
+	done
+
+	tiktok=${links[tiktok]}
+	youtube=${links[youtube]}
+	instagram=${links[instagram]}
+
+	[[ -n $tiktok && -n $youtube && -n $instagram ]] || continue
+
+	printf '%s\t' "$num" "$title" "$desc" "$link" "$tiktok" "$youtube" "$instagram"
+	echo
+done
