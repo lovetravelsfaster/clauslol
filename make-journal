@@ -87,11 +87,6 @@ for entry in $journal_entries_md_dir/*.md; do
 	    metadata["$k"]="$v"
 	done < <(parse_yaml_metadata "$entry")
 
-	# Debugging, can delete when done
-	echo "Title: ${metadata[title]}" >&2
-	echo "Description: ${metadata[description]}" >&2
-	echo "Number: ${metadata[number]}" >&2
-
 	# Using filename without extension to name
 	# the folder of the entry, entry itself will
 	# be index.html

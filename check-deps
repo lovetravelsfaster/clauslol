@@ -19,5 +19,8 @@ check() {
 check command -v bash
 check command -v curl
 check command -v pandoc
+check command -v awk
+check command -v sed
+check command -v basename
 
 exit "$code"
