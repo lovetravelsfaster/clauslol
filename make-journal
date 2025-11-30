@@ -8,11 +8,25 @@
 # Date: 2025-11-27
 # License: MIT
 
+varname=$1
+
 journal_entries_md_dir=journal_entries
-journal_entries_html_dir=_site/journal/html_entries
+
+baselink='https://claus.lol'
+
+# this is a "journal_entry" object in the final json
+read -d '' -r json <<-"EOF"
+{
+	"title": $title,
+	"description": $description,
+	"link": $link,
+	"number": $number
+}
+EOF
 
 # Extract YAML metadata (between the first pair of --- lines)
-extract_metadata() {
+# to stdout
+filter_yaml_metadata() {
     local file=$1
     awk '
         /^---$/ {
@@ -28,6 +42,8 @@ extract_metadata() {
     ' "$file"
 }
 
+# Parses the actual YAML lines and sends
+# key/values to stdout
 parse_yaml_metadata() {
     local file=$1 line key val
 
@@ -42,69 +58,53 @@ parse_yaml_metadata() {
         key=${line%%:*}
         val=${line#*:}
 
-        # Trim whitespace around key
-        key=${key%%[[:space:]]*}
-
-        # Trim leading whitespace from value
-        val=${val#"${val%%[![:space:]]*}"}
+        # Trim whitespace
+        key=$(awk '{$1=$1}1' <<< "$key")
+        val=$(awk '{$1=$1}1' <<< "$val")
 
         printf '%s=%s\n' "$key" "$val"
-    done < <(extract_metadata "$file")
+
+    done < <(filter_yaml_metadata "$file")
 }
 
 
-# Parse metadata into key/value to stdout
-parse_metadata() {
-    local file=$1 line key val
-
-    while IFS= read -r line; do
-        [[ -z $line || $line == \#* ]] && continue
-        [[ $line == *"=\""* ]] || continue
-
-        key=${line%%=*}
-        val=${line#*=}
-        val=${val#\"}
-        val=${val%\"}
-
-        printf '%s=%s\n' "$key" "$val"
-    done < <(extract_metadata "$file")
-}
-
+objects=()
 for entry in $journal_entries_md_dir/*.md; do
 
 	# The journal_entry.html "template" has a few 
 	# placeholders we need to replace. Journal number, 
 	# Journal date, and Journal title
 
-	# Convert from .md to .html, and inject the HTML
-	# snippet into the journal_entry.html template, 
-	# and create the full journal entry html page for
-	# the given entry
-
 	# Get filename and date
 	filename="$(basename "$entry")"
 	filename="${filename%.*}"
 	date="${filename:0:10}"
 
-	entry_dir=_site/journal/"$filename"
-
-	mkdir -p "$entry_dir"
-
-	# Get metadata key/values into assoc array
+	# Get metadata from each entry into
+	# key/values of an assoc array
 	declare -A metadata=()
 	while IFS='=' read -r k v; do
 	    metadata["$k"]="$v"
 	done < <(parse_yaml_metadata "$entry")
 
+	# Debugging, can delete when done
 	echo "Title: ${metadata[title]}" >&2
 	echo "Description: ${metadata[description]}" >&2
 	echo "Number: ${metadata[number]}" >&2
 
-	#pandoc $entry -f markdown -t html
+	# Using filename without extension to name
+	# the folder of the entry, entry itself will
+	# be index.html
+	#entry_dir=_site/j/"$filename"
+	entry_dir="_site/j/${metadata[number]}"
+	mkdir -p "$entry_dir"
 
-	#entry_html=<(pandoc $entry -f markdown -t html)
-
-	#echo $entry_html
+	# Replacing all the placeholders in 
+	# journal_entry.html. Two of them with
+	# simple in-line variable comprehension,
+	# the actual JOURNAL_ENTRY for the HTML
+	# snippet is done by reading from stdin
+	# piped from the pandoc command.
 	pandoc $entry -f markdown -t html | \
 	sed \
 		-e "s|{{JOURNAL_NUMBER}}|${metadata[number]}|g" \
@@ -114,18 +114,33 @@ for entry in $journal_entries_md_dir/*.md; do
 		         d
 		     }" \
 		  static/journal_entry.html > "$entry_dir"/index.html
-	#sed -e "/{{CONTENT}}/{
-    #    r $entry_html
-    #    d
-    #}" static/journal_entry.html > _site/
 
-
-	# filename="$(basename "$entry")"
-	# Convert to html snippet file
-	# pandoc -f markdown -t html $entry > $journal_entries_html_dir/$filename.html
-	# echo "File: $entry" >&2
-
-	# metadata=$(extract_metadata "$entry")
-	# echo "  Metadata:"
-    # printf '%s\n' "$metadata"
+	# Append to objects array for later writing json
+	object=$(jq -nc \
+		--arg title "${metadata[title]}" \
+		--arg description "${metadata[description]}" \
+		--arg link "$baselink/j/${metadata[number]}" \
+		--argjson number "${metadata[number]}" \
+		"$json"
+	)
+	objects+=("$object")
 done
+
+# generate output JSON
+printf -v now '%(%s)T' -1
+output=$(printf '%s\n' "${objects[@]}" | jq -n \
+    --argjson date "$now" \
+    --arg link "$baselink" \
+    '{
+        "name": "Claus LOL",
+        "site": $link,
+        "generated": $date,
+        "journal_entries": [inputs]
+     }'
+)
+
+# print the data (optionally as jsonp if the first arg is set)
+if [[ -n $varname ]]; then
+	output="const $varname = $output;"
+fi
+echo "$output"

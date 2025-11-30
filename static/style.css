@@ -22,7 +22,13 @@
 }
 
 ul {
-	list-style-type: none;
+	list-style-type: "-  ";
+}
+
+ol, ul {
+  	padding-left: 0;   /* important! */
+  	margin-left: 0;   /* in case something else adds margin */
+  	list-style-position: inside;
 }
 
 /* helper */
@@ -71,8 +77,18 @@ body, code {
 	font-style: normal;
 }
 
+
 b, strong, h1, h2, h3, h4, h5, h6 {
 	font-weight: 900;
+}
+
+/* Global block spacing */
+p, ul, ol, pre, img, blockquote {
+  margin-block: 1.1em;
+}
+
+p {
+	max-width: 620px;
 }
 
 #container {
@@ -140,10 +156,6 @@ h1.title {
 	color: var(--color3);
 }
 
-p.content {
-	max-width: 620px;
-}
-
 #socials {
 	text-align: center;
 	margin-top: 30px;
@@ -193,7 +205,7 @@ pre.terminal > code .ansi2 {
 	color: #666;
 }
 
-/* episodes table */
+/* journal table */
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -224,23 +236,23 @@ tr:hover {
 	background-color: #222;
 }
 
-#episodes-table .title > .number {
+#journal-table .title > .number {
 	color: var(--color4);
 }
 
-#episodes-table .title > .name {
+#journal-table .title > .name {
 	color: var(--color3);
 }
 
-#episodes-table .description {
+#journal-table .description {
 	color: var(--color5);
 }
 
-#episodes-table .description > .code {
+#journal-table .description > .code {
 	color: var(--color2);
 }
 
-#episodes-table .link {
+#journal-table .link {
 	/*
 	font-weight: italic;
 	color: var(--color5) !important;

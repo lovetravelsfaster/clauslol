@@ -1,5 +1,5 @@
 ---
-title: Second Test MD doc"
+title: Second Test MD doc
 description: Another document to test MD, Pandoc, etc.
 number: 2
 ---

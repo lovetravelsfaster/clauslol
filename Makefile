@@ -18,16 +18,19 @@ SHELL := bash
 
 .PHONY: build
 build:
-	mkdir -p _site _site/contact _site/static _site/journal _site/resources
+	mkdir -p _site _site/contact _site/static _site/j _site/resources
 	# copy static files
 	cat static/style.css > _site/static/style.css
 	cat static/ansi.css > _site/static/ansi.css
 	cat static/index.html > _site/index.html
 	cat static/contact.html > _site/contact/index.html
 	cat static/resources.html > _site/resources/index.html
-	cat static/journal.html > _site/journal/index.html
+	cat static/journal.html > _site/j/index.html
 	# make /ping endpoint (nginx handles this for me, but just in case)
 	echo 'pong' > _site/ping
+
+	# Once the script works, I should > this to _site/static/journal.js
+	./make-journal JOURNAL > _site/static/journal.js
 	
 	# ./make-journal-json JOURNAL > _site/static/journal.js
 	# create all pages for each video
