@@ -30,7 +30,7 @@ Like this.
 
 ***Bold and cursive***  
 
-[A link](www.tv2.dk)  
+[A link](http://www.tv2.dk)  
 
 
 ### Even smaller header
