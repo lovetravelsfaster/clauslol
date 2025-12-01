@@ -8,7 +8,6 @@ venv/
 .vscode/
 .idea/
 *.swp
-EOF
 
 # Make/Website
 _site/

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#
+# Ensure the required dep programs are available
+#
+# Author: lovetravelsfaster
+# Date: 2025-12-01
+# License: MIT
+
+BUILD_ID=$(date +%Y-%m-%d_%H-%M)
+TARGET="deploy@lakelabs:/srv/www/clauslol/releases/$(echo $BUILD_ID)"
+rsync -avz --delete _site/ "$TARGET/"

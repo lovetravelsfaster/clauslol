@@ -50,6 +50,10 @@ check:
 clean:
 	rm -rf _site
 
+.PHONY: deploy
+deploy:
+	./deploy
+
 # static/favicon.ico:
 # 	curl -o $@ https://files.daveeddy.com/ysap/favicon.ico
 # 
@@ -61,8 +65,3 @@ clean:
 # 
 # .PHONY: all
 # all: build deploy
-# 
-# 
-# .PHONY: deploy
-# deploy:
-# 	rsync -avh --delete ./_site/ web:/var/www/ysap.sh/
