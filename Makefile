@@ -1,6 +1,6 @@
 # Create, manage, and deploy the Claus LOL website
 #
-# Author: Claus
+# Author: lovetravelsfaster
 # Date: 2025-11-26
 # License: MIT
 

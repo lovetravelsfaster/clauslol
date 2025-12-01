@@ -1,8 +1,8 @@
 /**
- * ysap.sh CSS file
+ * claus.lol CSS file
  *
- * Author: Dave Eddy <dave@daveeddy.com>
- * Date: April 02, 2025
+ * Author: lovetravelsfaster
+ * Date: 2025-12-01
  * License: MIT
  */
 
@@ -26,8 +26,8 @@ ul {
 }
 
 ol, ul {
-  	padding-left: 0;   /* important! */
-  	margin-left: 0;   /* in case something else adds margin */
+  	padding-left: 0;
+  	margin-left: 0;
   	list-style-position: inside;
 }
 
@@ -167,6 +167,7 @@ h1.title {
         font-size: 12px;
 }
 
+
 /* terminal display */
 pre.terminal {
 	padding: 5px;
@@ -225,12 +226,6 @@ th {
 tr:nth-child(odd) {
 	background-color: #131313;
 }
-
-/*
-tr:last-child td {
-	margin-bottom: 10px;
-}
-*/
 
 tr:hover {
 	background-color: #222;
