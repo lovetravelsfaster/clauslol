@@ -69,7 +69,7 @@ parse_yaml_metadata() {
 
 
 objects=()
-for entry in $journal_entries_md_dir/*.md; do
+for entry in "$journal_entries_md_dir"/*.md; do
 
 	# The journal_entry.html "template" has a few 
 	# placeholders we need to replace. Journal number, 
@@ -100,7 +100,7 @@ for entry in $journal_entries_md_dir/*.md; do
 	# the actual JOURNAL_ENTRY for the HTML
 	# snippet is done by reading from stdin
 	# piped from the pandoc command.
-	pandoc $entry -f markdown -t html | \
+	pandoc "$entry" -f markdown -t html | \
 	sed \
 		-e "s|{{JOURNAL_NUMBER}}|${metadata[number]}|g" \
 		-e "s|{{JOURNAL_DATE}}|$date|g" \

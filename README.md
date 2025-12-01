@@ -1,4 +1,4 @@
-Claus LOL Website
+Claus.LOL Website
 =================
 
 https://claus.lol
