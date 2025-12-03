@@ -19,7 +19,7 @@ help:
 .PHONY: build
 build:
 	# create necessary folders
-	mkdir -p _site _site/contact _site/static _site/j _site/resources
+	mkdir -p _site _site/contact _site/static _site/j _site/resources _site/images
 	# copy static files
 	cat static/style.css > _site/static/style.css
 	cat static/ansi.css > _site/static/ansi.css
@@ -27,6 +27,8 @@ build:
 	cat static/contact.html > _site/contact/index.html
 	cat static/resources.html > _site/resources/index.html
 	cat static/journal.html > _site/j/index.html
+	# copy images
+	cp -a images/. _site/images
 	# make /ping endpoint (nginx handles this for me, but just in case)
 	echo 'pong' > _site/ping
 	# create all journal entry pages and journal index table

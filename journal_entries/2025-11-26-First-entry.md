@@ -34,5 +34,5 @@ Like this.
 
 
 ### Even smaller header
-<img src="Untitled.png" width="300">
+<img src="/images/Untitled.png" width="300">
 
