@@ -6,6 +6,23 @@
 # Date: 2025-12-01
 # License: MIT
 
-RELEASE_ID=$(date +%Y-%m-%d_%H-%M)
+DESCRIPTION="$1"
+
+RELEASE_ID=$(date +%Y-%m-%d_%H-%M-%S)
+
+# Setting up log of releases
+release_log="/srv/www/clauslol/releases/release_log.txt"
+
+# Create log file with header if it doesn't exist
+ssh deploy@lakelabs 'bash -s' << EOF
+if [[ ! -f "$release_log" ]]; then
+    printf "# release_id\tdescription\n" > "$release_log"
+fi
+EOF
+
+ssh deploy@lakelabs 'bash -s' << EOF
+printf '%s\t%s\n' "$RELEASE_ID" "$DESCRIPTION" >> "$release_log"
+EOF
+
 TARGET="deploy@lakelabs:/srv/www/clauslol/releases/$(echo $RELEASE_ID)"
 rsync -avz --delete _site/ "$TARGET/"

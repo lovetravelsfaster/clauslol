@@ -52,7 +52,8 @@ clean:
 
 .PHONY: deploy
 deploy:
-	./deploy
+	./deploy "$(desc)"
+
 
 # static/favicon.ico:
 # 	curl -o $@ https://files.daveeddy.com/ysap/favicon.ico
