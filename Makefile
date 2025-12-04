@@ -17,10 +17,12 @@ help:
 	@echo 'make clean         remove any generated files'
 
 .PHONY: build
-build:
+build: static/favicon.ico static/favicon.png
 	# create necessary folders
 	mkdir -p _site _site/contact _site/static _site/j _site/resources _site/images
 	# copy static files
+	cat static/favicon.ico > _site/favicon.ico
+	cat static/favicon.png > _site/static/favicon.png
 	cat static/style.css > _site/static/style.css
 	cat static/ansi.css > _site/static/ansi.css
 	cat static/index.html > _site/index.html
